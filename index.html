@@ -580,15 +580,22 @@
         }
 
         function parseStrategyData(strategyString) {
+            const lines = strategyString.split('\n').map(line => line.trim()).filter(line => line);
             const strategies = [];
-            const lines = strategyString.split(/\d+\.\s*/);
 
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (line) {
-                    const textOnly = line.split('(')[0].trim();
-                    strategies.push({ text: textOnly });
+            let buffer = "";
+
+            for (const line of lines) {
+                if (/^\d+\.\s*/.test(line)) {
+                    if (buffer) strategies.push({ text: buffer.trim() });
+                    buffer = line.replace(/^\d+\.\s*/, '');
+                } else {
+                    buffer += " " + line;
                 }
+            }
+
+            if (buffer) {
+                strategies.push({ text: buffer.trim() });
             }
 
             return strategies;
