@@ -582,9 +582,9 @@
         function parseStrategyData(strategyString) {
             const lines = strategyString.split('\n').map(line => line.trim()).filter(line => line);
             const strategies = [];
-
+        
             let buffer = "";
-
+        
             for (const line of lines) {
                 if (/^\d+\.\s*/.test(line)) {
                     if (buffer) strategies.push({ text: buffer.trim() });
@@ -593,12 +593,12 @@
                     buffer += " " + line;
                 }
             }
-
-            if (buffer) {
-                strategies.push({ text: buffer.trim() });
-            }
-
-            return strategies;
+        
+            if (buffer) strategies.push({ text: buffer.trim() });
+        
+            return strategies.map(s => ({
+                text: s.text.replace(/\(\s*\d+(\.\d+)?%\s*\)/g, '').trim()
+            }));
         }
 
 
