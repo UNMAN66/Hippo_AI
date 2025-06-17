@@ -582,28 +582,18 @@
         function parseStrategyData(strategyString) {
             const strategies = [];
             const lines = strategyString.split(/\d+\.\s*/);
-            
+
             for (let i = 1; i < lines.length; i++) {
                 const line = lines[i].trim();
                 if (line) {
-                    const match = line.match(/^(.+?)\s*\((\d+\.?\d*)%\)$/);
-                    if (match) {
-                        strategies.push({
-                            text: match[1].trim(),
-                            percentage: parseFloat(match[2])
-                        });
-                    } else {
-                        // Fallback if no percentage found
-                        strategies.push({
-                            text: line,
-                            percentage: null
-                        });
-                    }
+                    const textOnly = line.split('(')[0].trim();
+                    strategies.push({ text: textOnly });
                 }
             }
-            
+
             return strategies;
         }
+
 
         function formatAIResponse(response) {
             if (!response || !Array.isArray(response) || response.length < 3) {
@@ -675,11 +665,11 @@
                 `;
 
                 strategies.forEach((strat, index) => {
-                    const percentageText = strat.percentage !== null ? ` <span class="strategy-percentage">(${strat.percentage}%)</span>` : '';
+                    const percentageText = '';
                     formattedHTML += `
                         <div class="strategy-item">
                             <div class="strategy-text">
-                                <strong>${index + 1}. ${strat.text}</strong>${percentageText}
+                                <strong>${index + 1}. ${strat.text}</strong>
                             </div>
                         </div>
                     `;
