@@ -1,129 +1,380 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Analisis Kepribadian AI</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f9f9f9;
-      padding: 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales AI Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    h1 {
-      font-size: 28px;
-      margin-bottom: 20px;
-      color: #333;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #0F172A;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-    textarea {
-      width: 100%;
-      max-width: 600px;
-      height: 120px;
-      padding: 15px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      resize: vertical;
-      margin-bottom: 20px;
-    }
+        .header {
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
 
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      background: #4f46e5;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.2s ease-in-out;
-    }
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
 
-    button:hover {
-      background: #4338ca;
-    }
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
 
-    .output {
-      margin-top: 30px;
-      max-width: 600px;
-      width: 100%;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
-      padding: 20px;
-    }
+        .message {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            max-width: 100%;
+        }
 
-    .output p {
-      font-size: 16px;
-      margin: 10px 0;
-      color: #333;
-    }
+        .message.user {
+            justify-content: flex-end;
+        }
 
-    .loader {
-      display: none;
-      margin-top: 15px;
-      font-size: 14px;
-      color: #888;
-    }
-  </style>
-</head>
-<body>
+        .message.ai {
+            justify-content: flex-start;
+        }
 
-  <h1>🔍 Analisis Kepribadian AI</h1>
-  
-  <textarea id="inputText" placeholder="Tulis deskripsi atau perilaku seseorang di sini..."></textarea>
-  <button id="submitBtn">Analisis</button>
-  <div class="loader" id="loader">⏳ Memproses...</div>
+        .message-content {
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            max-width: 70%;
+            word-wrap: break-word;
+            line-height: 1.5;
+        }
 
-  <div class="output" id="outputBox" style="display: none;">
-    <p><strong>Persentase Temperament:</strong> <span id="hasil1"></span></p>
-    <p><strong>Dominan Trait:</strong> <span id="hasil2"></span></p>
-    <p><strong>Strategi Disarankan:</strong> <span id="hasil3"></span></p>
-  </div>
+        .message.user .message-content {
+            background-color: white;
+            color: #0F172A;
+            border-bottom-right-radius: 0.25rem;
+        }
 
-  <script type="module">
-    import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/+esm";
+        .message.ai .message-content {
+            background-color: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: white;
+            border-bottom-left-radius: 0.25rem;
+        }
 
-    async function analyzeText(inputText) {
-      const loader = document.getElementById("loader");
-      const outputBox = document.getElementById("outputBox");
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
 
-      loader.style.display = "block";
-      outputBox.style.display = "none";
+        .avatar.user {
+            background-color: #10B981;
+            color: white;
+        }
 
-      try {
-        const client = await Client.connect("UNMAN88/Hippo_AI");
-        const result = await client.predict("/predict", {
-          text: inputText,
+        .avatar.ai {
+            background-color: #3B82F6;
+            color: white;
+        }
+
+        .input-container {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: #0F172A;
+        }
+
+        .input-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            gap: 0.75rem;
+        }
+
+        .input-box {
+            flex: 1;
+            background-color: #1E293B;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            padding: 0.75rem 3rem 0.75rem 1rem;
+            color: white;
+            font-size: 1rem;
+            resize: none;
+            min-height: 44px;
+            max-height: 120px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-box:focus {
+            border-color: #3B82F6;
+        }
+
+        .input-box::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .send-button {
+            position: absolute;
+            right: 0.5rem;
+            bottom: 0.5rem;
+            background-color: #3B82F6;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .send-button:hover:not(:disabled) {
+            background-color: #2563EB;
+        }
+
+        .send-button:disabled {
+            background-color: rgba(59, 130, 246, 0.5);
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .loading-dots {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .loading-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #3B82F6;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .trait-result {
+            margin: 0.5rem 0;
+        }
+
+        .trait-label {
+            font-weight: 600;
+            color: #3B82F6;
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 2rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .chat-container, .input-wrapper {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+        }
+    </style>
+    <script type="module">
+        import { Client } from "https://esm.sh/@gradio/client";
+
+        const chatContainer = document.getElementById('chatContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        let isLoading = false;
+
+        messageInput.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
         });
 
-        document.getElementById("hasil1").innerText = result.data[0];
-        document.getElementById("hasil2").innerText = result.data[1];
-        document.getElementById("hasil3").innerText = result.data[2];
+        messageInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
 
-        outputBox.style.display = "block";
-      } catch (error) {
-        alert("Terjadi kesalahan saat menghubungi AI.");
-        console.error(error);
-      } finally {
-        loader.style.display = "none";
+        sendButton.addEventListener('click', sendMessage);
+
+        function addMessage(content, isUser = false, isLoading = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = message ${isUser ? 'user' : 'ai'};
+
+            const avatar = document.createElement('div');
+            avatar.className = avatar ${isUser ? 'user' : 'ai'};
+            avatar.textContent = isUser ? 'U' : 'AI';
+
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+
+            if (isLoading) {
+                messageContent.innerHTML = 
+                    <div class="loading">
+                        <span>Sedang memproses</span>
+                        <div class="loading-dots">
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                        </div>
+                    </div>
+                ;
+            } else {
+                messageContent.innerHTML = content;
+            }
+
+            if (isUser) {
+                messageDiv.appendChild(messageContent);
+                messageDiv.appendChild(avatar);
+            } else {
+                messageDiv.appendChild(avatar);
+                messageDiv.appendChild(messageContent);
+            }
+
+            const welcomeMessage = chatContainer.querySelector('.welcome-message');
+            if (welcomeMessage) welcomeMessage.remove();
+
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            return messageContent;
+        }
+
+      function formatAIResponse(response) {
+          if (!response || !response["Temperament"]) {
+              return `<div class="trait-result"><span class="trait-label">Maaf:</span> Tidak dapat mengenali hasil analisis. Coba tuliskan deskripsi lebih lengkap.</div>`;
+          }
+      
+          let formattedText = `<div class="trait-result"><span class="trait-label">Hasil Temperament:</span></div>`;
+          const temperament = response["Temperament"];
+          
+          for (const [trait, value] of Object.entries(temperament)) {
+              const percent = (value * 100).toFixed(1);
+              formattedText += `<div class="trait-result">${trait}: ${percent}%</div>`;
+          }
+      
+          if (Array.isArray(response["Strategy"]) && response["Strategy"].length > 0) {
+              formattedText += `<div class="trait-result"><span class="trait-label">Strategi Penjualan:</span></div>`;
+              response["Strategy"].forEach((strategy, index) => {
+                  formattedText += `<div class="trait-result">${index + 1}. ${strategy}</div>`;
+              });
+          }
+      
+          return formattedText;
       }
-    }
 
-    document.getElementById("submitBtn").addEventListener("click", () => {
-      const input = document.getElementById("inputText").value.trim();
-      if (input) {
-        analyzeText(input);
-      } else {
-        alert("Masukkan teks terlebih dahulu.");
-      }
-    });
-  </script>
 
+       async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message || isLoading) return;
+        
+            // Validasi jumlah kata minimal 5
+            const wordCount = message.split(/\s+/).length;
+            if (wordCount < 5) {
+                addMessage('Maaf, mohon tuliskan deskripsi yang lebih lengkap (minimal 5 kata).', false);
+                return;
+            }
+        
+            // Tambahkan pesan pengguna ke UI
+            addMessage(message, true);
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+        
+            const loadingContent = addMessage('', false, true);
+            isLoading = true;
+            sendButton.disabled = true;
+        
+            try {
+                const client = await Client.connect("UNMAN88/Hippo_AI");
+                const result = await client.predict(0, [message]);
+        
+                loadingContent.parentElement.remove();
+                const aiContent = addMessage('', false);
+                aiContent.innerHTML = formatAIResponse(result.data[0]);
+        
+            } catch (error) {
+                loadingContent.parentElement.remove();
+                addMessage(Maaf, terjadi kesalahan: ${error.message}, false);
+            } finally {
+                isLoading = false;
+                sendButton.disabled = false;
+                messageInput.focus();
+            }
+        }
+
+
+        window.addEventListener('load', () => {
+            const welcomeMessage = chatContainer.querySelector('.welcome-message');
+            if (welcomeMessage) welcomeMessage.remove();
+            addMessage('Tolong ceritakan tentang konsumen Anda', false);
+            messageInput.focus();
+        });
+    </script>
+</head>
+<body>
+    <div class="header">
+        <h1>Hppo AI</h1>
+    </div>
+    <div class="chat-container" id="chatContainer">
+        <div class="welcome-message">
+            <h2>Selamat datang di Sales AI Assistant!</h2>
+            <p>Kirim pesan Anda untuk mendapatkan analisis kepribadian dan strategi penjualan yang tepat.</p>
+        </div>
+    </div>
+    <div class="input-container">
+        <div class="input-wrapper">
+            <textarea id="messageInput" class="input-box" placeholder="Ketik pesan Anda di sini..." rows="1"></textarea>
+            <button id="sendButton" class="send-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22,2 15,22 11,13 2,9"></polygon>
+                </svg>
+            </button>
+        </div>
+    </div>
 </body>
 </html>
