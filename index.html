@@ -219,141 +219,136 @@
             }
         }
     </style>
-    <script type="module">
-        import { Client } from "https://esm.sh/@gradio/client";
+<script type="module">
+    import { Client } from "https://esm.sh/@gradio/client";
 
-        const chatContainer = document.getElementById('chatContainer');
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
-        let isLoading = false;
+    const chatContainer = document.getElementById('chatContainer');
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    let isLoading = false;
 
-        messageInput.addEventListener('input', function () {
-            this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-        });
+    messageInput.addEventListener('input', function () {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
 
-        messageInput.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
+    messageInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
 
-        sendButton.addEventListener('click', sendMessage);
+    sendButton.addEventListener('click', sendMessage);
 
-        function addMessage(content, isUser = false, isLoading = false) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = message ${isUser ? 'user' : 'ai'};
+    function addMessage(content, isUser = false, isLoading = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
 
-            const avatar = document.createElement('div');
-            avatar.className = avatar ${isUser ? 'user' : 'ai'};
-            avatar.textContent = isUser ? 'U' : 'AI';
+        const avatar = document.createElement('div');
+        avatar.className = `avatar ${isUser ? 'user' : 'ai'}`;
 
-            const messageContent = document.createElement('div');
-            messageContent.className = 'message-content';
+        const messageContent = document.createElement('div');
+        messageContent.className = 'message-content';
 
-            if (isLoading) {
-                messageContent.innerHTML = 
-                    <div class="loading">
-                        <span>Sedang memproses</span>
-                        <div class="loading-dots">
-                            <div class="loading-dot"></div>
-                            <div class="loading-dot"></div>
-                            <div class="loading-dot"></div>
-                        </div>
+        if (isLoading) {
+            messageContent.innerHTML = `
+                <div class="loading">
+                    <span>Sedang memproses</span>
+                    <div class="loading-dots">
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
                     </div>
-                ;
-            } else {
-                messageContent.innerHTML = content;
-            }
-
-            if (isUser) {
-                messageDiv.appendChild(messageContent);
-                messageDiv.appendChild(avatar);
-            } else {
-                messageDiv.appendChild(avatar);
-                messageDiv.appendChild(messageContent);
-            }
-
-            const welcomeMessage = chatContainer.querySelector('.welcome-message');
-            if (welcomeMessage) welcomeMessage.remove();
-
-            chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-
-            return messageContent;
+                </div>
+            `;
+        } else {
+            messageContent.innerHTML = content;
         }
 
-      function formatAIResponse(response) {
-          if (!response || !response["Temperament"]) {
-              return `<div class="trait-result"><span class="trait-label">Maaf:</span> Tidak dapat mengenali hasil analisis. Coba tuliskan deskripsi lebih lengkap.</div>`;
-          }
-      
-          let formattedText = `<div class="trait-result"><span class="trait-label">Hasil Temperament:</span></div>`;
-          const temperament = response["Temperament"];
-          
-          for (const [trait, value] of Object.entries(temperament)) {
-              const percent = (value * 100).toFixed(1);
-              formattedText += `<div class="trait-result">${trait}: ${percent}%</div>`;
-          }
-      
-          if (Array.isArray(response["Strategy"]) && response["Strategy"].length > 0) {
-              formattedText += `<div class="trait-result"><span class="trait-label">Strategi Penjualan:</span></div>`;
-              response["Strategy"].forEach((strategy, index) => {
-                  formattedText += `<div class="trait-result">${index + 1}. ${strategy}</div>`;
-              });
-          }
-      
-          return formattedText;
-      }
-
-
-       async function sendMessage() {
-            const message = messageInput.value.trim();
-            if (!message || isLoading) return;
-        
-            // Validasi jumlah kata minimal 5
-            const wordCount = message.split(/\s+/).length;
-            if (wordCount < 5) {
-                addMessage('Maaf, mohon tuliskan deskripsi yang lebih lengkap (minimal 5 kata).', false);
-                return;
-            }
-        
-            // Tambahkan pesan pengguna ke UI
-            addMessage(message, true);
-            messageInput.value = '';
-            messageInput.style.height = 'auto';
-        
-            const loadingContent = addMessage('', false, true);
-            isLoading = true;
-            sendButton.disabled = true;
-        
-            try {
-                const client = await Client.connect("UNMAN88/Hippo_AI");
-                const result = await client.predict(0, [message]);
-        
-                loadingContent.parentElement.remove();
-                const aiContent = addMessage('', false);
-                aiContent.innerHTML = formatAIResponse(result.data[0]);
-        
-            } catch (error) {
-                loadingContent.parentElement.remove();
-                addMessage(Maaf, terjadi kesalahan: ${error.message}, false);
-            } finally {
-                isLoading = false;
-                sendButton.disabled = false;
-                messageInput.focus();
-            }
+        if (isUser) {
+            messageDiv.appendChild(messageContent);
+            messageDiv.appendChild(avatar);
+        } else {
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(messageContent);
         }
 
+        const welcomeMessage = chatContainer.querySelector('.welcome-message');
+        if (welcomeMessage) welcomeMessage.remove();
 
-        window.addEventListener('load', () => {
-            const welcomeMessage = chatContainer.querySelector('.welcome-message');
-            if (welcomeMessage) welcomeMessage.remove();
-            addMessage('Tolong ceritakan tentang konsumen Anda', false);
+        chatContainer.appendChild(messageDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        return messageContent;
+    }
+
+    function formatAIResponse(response) {
+        if (!response || !response["Temperament"]) {
+            return `<div class="trait-result"><span class="trait-label">Maaf:</span> Tidak dapat mengenali hasil analisis. Coba tuliskan deskripsi lebih lengkap.</div>`;
+        }
+
+        let formattedText = `<div class="trait-result"><span class="trait-label">Hasil Temperament:</span></div>`;
+        const temperament = response["Temperament"];
+
+        for (const [trait, value] of Object.entries(temperament)) {
+            const percent = (value * 100).toFixed(1);
+            formattedText += `<div class="trait-result">${trait}: ${percent}%</div>`;
+        }
+
+        if (Array.isArray(response["Strategy"]) && response["Strategy"].length > 0) {
+            formattedText += `<div class="trait-result"><span class="trait-label">Strategi Penjualan:</span></div>`;
+            response["Strategy"].forEach((strategy, index) => {
+                formattedText += `<div class="trait-result">${index + 1}. ${strategy}</div>`;
+            });
+        }
+
+        return formattedText;
+    }
+
+    async function sendMessage() {
+        const message = messageInput.value.trim();
+        if (!message || isLoading) return;
+
+        const wordCount = message.split(/\s+/).length;
+        if (wordCount < 5) {
+            addMessage('Maaf, mohon tuliskan deskripsi yang lebih lengkap (minimal 5 kata).', false);
+            return;
+        }
+
+        addMessage(message, true);
+        messageInput.value = '';
+        messageInput.style.height = 'auto';
+
+        const loadingContent = addMessage('', false, true);
+        isLoading = true;
+        sendButton.disabled = true;
+
+        try {
+            const client = await Client.connect("UNMAN88/Hippo_AI");
+            const result = await client.predict(0, [message]);
+
+            loadingContent.parentElement.remove();
+            const aiContent = addMessage('', false);
+            aiContent.innerHTML = formatAIResponse(result.data[0]);
+
+        } catch (error) {
+            loadingContent.parentElement.remove();
+            addMessage(`Maaf, terjadi kesalahan: ${error.message}`, false);
+        } finally {
+            isLoading = false;
+            sendButton.disabled = false;
             messageInput.focus();
-        });
-    </script>
+        }
+    }
+
+    window.addEventListener('load', () => {
+        const welcomeMessage = chatContainer.querySelector('.welcome-message');
+        if (welcomeMessage) welcomeMessage.remove();
+        addMessage('Tolong ceritakan tentang konsumen Anda', false);
+        messageInput.focus();
+    });
+</script>
 </head>
 <body>
     <div class="header">
