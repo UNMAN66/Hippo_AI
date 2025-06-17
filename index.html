@@ -330,7 +330,8 @@
 
             loadingContent.parentElement.remove();
             const aiContent = addMessage('', false);
-            aiContent.innerHTML = formatAIResponse(result.data[0]);
+            aiContent.innerHTML = `<pre>${JSON.stringify(result.data[0], null, 2)}</pre>`;
+
 
         } catch (error) {
             loadingContent.parentElement.remove();
