@@ -696,15 +696,27 @@
             const message = messageInput.value.trim();
             if (!message || isLoading) return;
 
-            // Reset follow-up timer when user interacts
             resetFollowUpTimer();
 
-            // Validasi jumlah kata minimal 5
-            const wordCount = message.split(/\s+/).length;
-            if (wordCount < 5) {
-                addMessage('<div class="error-message">Mohon tuliskan deskripsi yang lebih lengkap (minimal 5 kata) untuk analisis yang akurat.</div>', false);
+            const wordCount = message.trim().split(/\s+/).length;
+            const messageLower = message.toLowerCase();
+            
+            const containsNonsense = /[^a-zA-Z0-9\s.,!?()-]/.test(message); 
+            const isSpam = /(.)\1{4,}/.test(message); 
+            const isOnlyNumber = /^[\d\s.,]+$/.test(message); 
+            const isJunk = message.length < 15 || wordCount < 5 || containsNonsense || isSpam || isOnlyNumber;
+            
+            const personalityKeywords = [
+              "pendiam", "aktif", "sopan", "tenang", "pemalu", "ramah", "banyak bicara", "emosional",
+              "pemikir", "sensitif", "percaya diri", "bersemangat", "pemarah", "terburu-buru", "santai", "tegas"
+            ];
+            const containsPersonality = personalityKeywords.some(word => messageLower.includes(word));
+            
+            if (isJunk || !containsPersonality) {
+                addMessage(`<div class="error-message">Deskripsi terlalu singkat atau tidak relevan. Mohon tuliskan <strong>perilaku, karakter, atau kebiasaan konsumen</strong> secara jelas.</div>`, false);
                 return;
             }
+
 
             // Tambahkan pesan pengguna ke UI
             addMessage(message, true);
