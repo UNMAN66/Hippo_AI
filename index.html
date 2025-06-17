@@ -259,16 +259,36 @@
             background: linear-gradient(135deg, #EF4444, #DC2626);
         }
 
-        .strategy-value {
-            font-size: 1.1rem;
+        .strategy-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .strategy-item {
+            background: rgba(252, 165, 165, 0.1);
+            border: 1px solid rgba(252, 165, 165, 0.2);
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .strategy-item:hover {
+            background: rgba(252, 165, 165, 0.15);
+            transform: translateX(3px);
+        }
+
+        .strategy-text {
+            font-size: 1rem;
             font-weight: 600;
             color: #FCA5A5;
-            margin-top: 0.5rem;
-            text-align: center;
-            padding: 1rem;
-            background: rgba(252, 165, 165, 0.1);
-            border-radius: 0.75rem;
-            border: 1px solid rgba(252, 165, 165, 0.2);
+            line-height: 1.5;
+        }
+
+        .strategy-percentage {
+            color: #EF4444;
+            font-weight: 700;
         }
 
         .input-container {
@@ -445,6 +465,14 @@
                 align-items: flex-start;
                 gap: 0.5rem;
             }
+
+            .strategy-item {
+                padding: 0.875rem 1rem;
+            }
+
+            .strategy-text {
+                font-size: 0.95rem;
+            }
         }
     </style>
     <script type="module">
@@ -551,6 +579,32 @@
             return temperaments.sort((a, b) => b.percentage - a.percentage);
         }
 
+        function parseStrategyData(strategyString) {
+            const strategies = [];
+            const lines = strategyString.split(/\d+\.\s*/);
+            
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line) {
+                    const match = line.match(/^(.+?)\s*\((\d+\.?\d*)%\)$/);
+                    if (match) {
+                        strategies.push({
+                            text: match[1].trim(),
+                            percentage: parseFloat(match[2])
+                        });
+                    } else {
+                        // Fallback if no percentage found
+                        strategies.push({
+                            text: line,
+                            percentage: null
+                        });
+                    }
+                }
+            }
+            
+            return strategies;
+        }
+
         function formatAIResponse(response) {
             if (!response || !Array.isArray(response) || response.length < 3) {
                 return `<div class="error-message">
@@ -561,6 +615,7 @@
 
             const [temperamentData, dominantTrait, strategy] = response;
             const temperaments = parseTemperamentData(temperamentData);
+            const strategies = parseStrategyData(strategy);
 
             let formattedHTML = '<div class="results-container">';
 
@@ -609,14 +664,29 @@
             }
 
             // Strategy Section
-            if (strategy) {
+            if (strategies && strategies.length > 0) {
                 formattedHTML += `
                     <div class="strategy-section">
                         <div class="section-header">
                             <div class="section-icon">🎯</div>
                             <span>Strategi Disarankan</span>
                         </div>
-                        <div class="strategy-value">${strategy}</div>
+                        <div class="strategy-list">
+                `;
+
+                strategies.forEach((strat, index) => {
+                    const percentageText = strat.percentage !== null ? ` <span class="strategy-percentage">(${strat.percentage}%)</span>` : '';
+                    formattedHTML += `
+                        <div class="strategy-item">
+                            <div class="strategy-text">
+                                <strong>${index + 1}. ${strat.text}</strong>${percentageText}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                formattedHTML += `
+                        </div>
                     </div>
                 `;
             }
