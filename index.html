@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hiippo AI - Sales Assistant</title>
+    <title>Hiippo AI</title>
     <style>
         * {
             margin: 0;
@@ -759,13 +759,13 @@
 
         // Welcome messages array untuk variasi
         const welcomeMessages = [
-            'Halo! 👋 Saya Hippo AI, siap membantu analisis konsumen Anda.<br><br>Untuk memulai, <strong>ceritakan tentang konsumen yang ingin Anda analisis</strong> - bagaimana perilaku mereka, cara berkomunikasi, preferensi, atau hal-hal yang Anda amati tentang kepribadian mereka.',
+            'Halo! 👋 Saya Hippo AI, siap membantu analisa kepribadian Anda.<br><br>Untuk memulai, <strong>ceritakan tentang orang yang ingin Anda analisis</strong> - bagaimana perilaku mereka, cara berkomunikasi, preferensi, atau hal-hal yang Anda amati tentang kepribadian mereka.',
             
-            'Selamat datang di Hippo AI! ✨<br><br>Saya akan membantu Anda memahami kepribadian konsumen untuk strategi penjualan yang lebih efektif.<br><br><strong>Mulai dengan menceritakan tentang konsumen Anda</strong> - semakin detail, semakin akurat analisis yang bisa saya berikan!',
+            'Selamat datang di Hippo AI! ✨<br><br>Saya akan membantu Anda memahami kepribadian seseorang untuk melakukan pendekatan.<br><br><strong>Mulai dengan menceritakan tentang orang yang anda maksud</strong> - semakin detail, semakin akurat analisis yang bisa saya berikan!',
             
-            'Hi! 🎯 Saya Hippo AI, spesialis analisis kepribadian konsumen.<br><br>Agar bisa memberikan insight yang tepat, <strong>tolong ceritakan tentang konsumen yang ingin Anda pahami</strong> - bagaimana cara mereka berinteraksi, mengambil keputusan, atau menunjukkan preferensi mereka?',
+            'Hi! 🎯 Saya Hippo AI, spesialis analisis kepribadian.<br><br>Agar bisa memberikan insight yang tepat, <strong>tolong ceritakan tentang orang yang ingin Anda pahami</strong> - bagaimana cara mereka berinteraksi, mengambil keputusan, atau menunjukkan preferensi mereka?',
             
-            'Halo! 🚀 Ready untuk menganalisis konsumen Anda?<br><br>Saya butuh informasi tentang <strong>perilaku, karakteristik, dan kebiasaan konsumen</strong> yang ingin Anda analisis. Ceritakan sebanyak mungkin detail yang Anda ketahui tentang mereka!'
+            'Halo! 🚀 Ready untuk menganalisis konsumen Anda?<br><br>Saya butuh informasi tentang <strong>perilaku, karakteristik, dan kebiasaan orang</strong> yang ingin Anda cari tahu. Ceritakan sebanyak mungkin detail yang Anda ketahui tentang mereka!'
         ];
 
         // Follow-up messages untuk engagement
@@ -831,17 +831,16 @@
 <body>
     <div class="header">
         <h1>Hippo AI</h1>
-        <p>Sales Personality Analysis Assistant</p>
     </div>
     <div class="chat-container" id="chatContainer">
         <div class="welcome-message">
             <h2>Selamat datang di Hippo AI!</h2>
-            <p>Analisis kepribadian konsumen untuk strategi penjualan yang lebih efektif</p>
+            <p>Analisis kepribadian seseorang</p>
         </div>
     </div>
     <div class="input-container">
         <div class="input-wrapper">
-            <textarea id="messageInput" class="input-box" placeholder="Ceritakan tentang konsumen Anda secara detail..." rows="1"></textarea>
+            <textarea id="messageInput" class="input-box" placeholder="Ceritakan tentang diri anda atau orang lain secara detail..." rows="1"></textarea>
             <button id="sendButton" class="send-button">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="22" y1="2" x2="11" y2="13"></line>
