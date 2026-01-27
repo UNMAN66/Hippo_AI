@@ -699,13 +699,14 @@
 
             resetFollowUpTimer();
 
-            const wordCount = message.trim().split(/\s+/).length;
+            const sentenceCount = (message.match(/[.!?]+/g) || []).length;
             const messageLower = message.toLowerCase();
             
             const containsNonsense = /[^a-zA-Z0-9\s.,!?()-]/.test(message); 
             const isSpam = /(.)\1{4,}/.test(message); 
             const isOnlyNumber = /^[\d\s.,]+$/.test(message); 
-            const isJunk = message.length < 15 || wordCount < 5 || containsNonsense || isSpam || isOnlyNumber;
+            
+            const isJunk = message.length < 20 || sentenceCount < 3 || containsNonsense || isSpam || isOnlyNumber;
             
             const personalityKeywords = [
               "pendiam", "aktif", "sopan", "tenang", "pemalu", "ramah", "banyak bicara", "emosional",
