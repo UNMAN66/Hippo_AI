@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -699,28 +698,21 @@
 
             resetFollowUpTimer();
 
-            const sentenceCount = (message.match(/[.!?]+/g) || []).length;
-            const messageLower = message.toLowerCase();
+            // LOGIKA VALIDASI BARU: Menghitung kalimat dengan lebih cerdas
+            const wordCount = message.split(/\s+/).length;
+            const sentenceCount = message.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
             
-            const containsNonsense = /[^a-zA-Z0-9\s.,!?()-]/.test(message); 
             const isSpam = /(.)\1{4,}/.test(message); 
             const isOnlyNumber = /^[\d\s.,]+$/.test(message); 
             
-            const isJunk = message.length < 20 || sentenceCount < 3 || containsNonsense || isSpam || isOnlyNumber;
+            // Syarat: Minimal 3 kalimat ATAU minimal 20 kata agar input detail tetap lolos
+            const isJunk = (sentenceCount < 3 && wordCount < 20) || isSpam || isOnlyNumber;
             
-            const personalityKeywords = [
-              "pendiam", "aktif", "sopan", "tenang", "pemalu", "ramah", "banyak bicara", "emosional",
-              "pemikir", "sensitif", "percaya diri", "bersemangat", "pemarah", "terburu-buru", "santai", "tegas"
-            ];
-            const containsPersonality = personalityKeywords.some(word => messageLower.includes(word));
-            
-            if (isJunk || !containsPersonality) {
-                addMessage(`<div class="error-message">Deskripsi terlalu singkat atau tidak relevan. Mohon tuliskan <strong>perilaku, karakter, atau kebiasaan konsumen</strong> secara jelas.</div>`, false);
+            if (isJunk) {
+                addMessage(`<div class="error-message">Mohon ceritakan perilaku konsumen secara lebih detail (minimal 3 kalimat).</div>`, false);
                 return;
             }
 
-
-            // Tambahkan pesan pengguna ke UI
             addMessage(message, true);
             messageInput.value = '';
             messageInput.style.height = 'auto';
@@ -737,7 +729,6 @@
                 const aiContent = addMessage('', false);
                 aiContent.innerHTML = formatAIResponse(result.data);
 
-                // Trigger progress bar animations
                 setTimeout(() => {
                     const progressBars = aiContent.querySelectorAll('.progress-fill');
                     progressBars.forEach(bar => {
@@ -748,8 +739,7 @@
             } catch (error) {
                 loadingContent.parentElement.remove();
                 addMessage(`<div class="error-message">
-                    <strong>Terjadi kesalahan:</strong> ${error.message}<br>
-                    <small>Silakan coba lagi dalam beberapa saat.</small>
+                    <strong>Koneksi Terputus:</strong> Server sedang sibuk, silakan coba lagi dalam 1 menit.
                 </div>`, false);
             } finally {
                 isLoading = false;
