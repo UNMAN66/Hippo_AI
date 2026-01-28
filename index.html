@@ -698,9 +698,11 @@
 
             if (message.toLowerCase() === "-mulai ulang-") {
             window.location.reload(); 
-            return;
-
-            resetFollowUpTimer();
+            return; 
+            }
+        
+            if (!message || isLoading) return;
+                    resetFollowUpTimer();
 
             const wordCount = message.split(/\s+/).length;
             const sentenceCount = message.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
