@@ -696,16 +696,18 @@
             const message = messageInput.value.trim();
             if (!message || isLoading) return;
 
+            if (message.toLowerCase() === "-mulai ulang-") {
+            window.location.reload(); 
+            return;
+
             resetFollowUpTimer();
 
-            // LOGIKA VALIDASI BARU: Menghitung kalimat dengan lebih cerdas
             const wordCount = message.split(/\s+/).length;
             const sentenceCount = message.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
             
             const isSpam = /(.)\1{4,}/.test(message); 
             const isOnlyNumber = /^[\d\s.,]+$/.test(message); 
             
-            // Syarat: Minimal 3 kalimat ATAU minimal 20 kata agar input detail tetap lolos
             const isJunk = (sentenceCount < 3 && wordCount < 20) || isSpam || isOnlyNumber;
             
             if (isJunk) {
@@ -748,7 +750,6 @@
             }
         }
 
-        // Welcome messages array untuk variasi
         const welcomeMessages = [
             'Halo! 👋 Saya Hippo AI, siap membantu analisa kepribadian Anda.<br><br>Untuk memulai, <strong>ceritakan tentang orang yang ingin Anda analisis</strong> - bagaimana perilaku mereka, cara berkomunikasi, preferensi, atau hal-hal yang Anda amati tentang kepribadian mereka.',
             
@@ -759,7 +760,6 @@
             'Halo! 🚀 Ready untuk menganalisis konsumen Anda?<br><br>Saya butuh informasi tentang <strong>perilaku, karakteristik, dan kebiasaan orang</strong> yang ingin Anda cari tahu. Ceritakan sebanyak mungkin detail yang Anda ketahui tentang mereka!'
         ];
 
-        // Follow-up messages untuk engagement
         const followUpMessages = [
             'Ceritakan lebih detail tentang konsumen tersebut? 🤔 Misalnya bagaimana cara mereka berkomunikasi atau mengambil keputusan?',
             
@@ -789,10 +789,10 @@
                     setTimeout(() => {
                         typingIndicator.remove();
                         addMessage(getRandomFollowUpMessage(), false);
-                        startFollowUpTimer(); // Restart timer for next follow-up
+                        startFollowUpTimer();
                     }, 2000);
                 }
-            }, 20000); // 20 seconds
+            }, 20000);
         }
 
         function resetFollowUpTimer() {
@@ -804,16 +804,13 @@
             const welcomeMessage = chatContainer.querySelector('.welcome-message');
             if (welcomeMessage) welcomeMessage.remove();
             
-            // Show typing indicator first
             const typingIndicator = showTypingIndicator();
             
-            // Then show welcome message after delay
             setTimeout(() => {
                 typingIndicator.remove();
                 addMessage(getRandomWelcomeMessage(), false);
                 messageInput.focus();
                 
-                // Start follow-up timer
                 startFollowUpTimer();
             }, 2500);
         });
